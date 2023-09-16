@@ -12,3 +12,6 @@
 2. **Install Required Modules**: Open the Python terminal and run `pip install tiktoken tkinterdnd2`.
 3. **Download Repository**: `git clone https://github.com/sm18lr88/Tiktoken-GUI`.
 4. **Run the Application**: `cd Tiktoken-GUI && python TikToken-GUI.py`.
+
+
+> Comment: I've see projects that attempt to use C++ and such to make tiktoken "faster". Tiktoken is already super fast as is. This app never delays my workflow.
