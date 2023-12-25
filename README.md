@@ -1,6 +1,6 @@
 # Tiktoken-GUI
 
-<img src="https://github.com/sm18lr88/Tiktoken-GUI/assets/64564447/8caa2e26-0e69-40e6-bb8d-f8d00949f9a1" width="400">
+![image](https://github.com/sm18lr88/Tiktoken-GUI/assets/64564447/d873c2d4-3924-4bad-bd2a-c6bdf77ff1f5)
 
 ## Features
 - Count tokens for various GPT models.
