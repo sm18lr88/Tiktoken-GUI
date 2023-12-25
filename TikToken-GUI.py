@@ -1,9 +1,4 @@
-import os
-import sys
-import subprocess
-import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
-from tkinterdnd2 import TkinterDnD
+import PySimpleGUI as sg
 import tiktoken
 
 def count_tokens(text, model_name):
@@ -28,11 +23,6 @@ def count_tokens(text, model_name):
     token_count = len(tokens)
     return token_count
 
-def count_tokens_file(file_path, model_name):
-    with open(file_path, 'r') as file:
-        text = file.read()
-    return count_tokens(text, model_name)
-
 def count_chars_words(text):
     chars = len(text)
     words = len(text.split())
@@ -45,38 +35,39 @@ def calculate_difference(limit, count):
     else:
         return f'Exceeds by {difference}'
 
-def begin_count():
-    text = text_box.get("1.0", 'end-1c')
-    token_count = count_tokens(text, model.get())
-    chars, words = count_chars_words(text)
-    
-    token_difference = calculate_difference(4096, token_count)  # GPT-4 limit
-    char_difference = calculate_difference(160, chars)  # Twitter limit
+def create_window():
+    sg.theme('BlueMono')
 
-    report = (f'Token count: {token_count}\n'
-              f'ChatGPT Plus: {token_difference}\n'
-              f'Character count: {chars}\n'
-              f'Twitter post: {char_difference}\n'
-              f'Word count: {words}')
+    layout = [
+        [sg.Multiline(size=(40, 15), key='-TEXT-', enable_events=True, expand_x=True, expand_y=True)],
+        [sg.Text('Model:'), sg.Combo(["gpt-4", "gpt-3.5-turbo", "gpt-35-turbo", "text-davinci-003", "text-davinci-002",
+                                      "text-davinci-001", "text-curie-001", "text-babbage-001", "text-ada-001",
+                                      "davinci", "curie", "babbage", "ada"], default_value="gpt-4", key='-MODEL-', readonly=True, expand_x=True),
+         sg.Text('', size=(40, 3), key='-REPORT-', expand_x=True, expand_y=True)]
+    ]
 
-    messagebox.showinfo("Count", report)
+    return sg.Window('TikToken', layout, resizable=True, finalize=True)
 
-root = TkinterDnD.Tk()
-root.minsize(300, 450)
-root.title('TikToken')
+window = create_window()
 
-text_box = tk.Text(root)
-text_box.pack(fill='both', expand=True)
+while True:
+    event, values = window.read(timeout=100)
 
-begin_count_button = tk.Button(root, text="Begin Count", command=begin_count)
-begin_count_button.pack(side='left')
+    if event == sg.WIN_CLOSED:
+        break
 
-model_list = ["gpt-4", "gpt-3.5-turbo", "gpt-35-turbo", "text-davinci-003", "text-davinci-002", "text-davinci-001",
-              "text-curie-001", "text-babbage-001", "text-ada-001", "davinci", "curie", "babbage", "ada"]
-model = tk.StringVar()
-model.set(model_list[0])  # set default value as GPT-4
+    if event == '-TEXT-' or event == '-MODEL-':
+        text = values['-TEXT-']
+        model_name = values['-MODEL-']
+        token_count = count_tokens(text, model_name)
+        chars, words = count_chars_words(text)
+        token_difference = calculate_difference(4096, token_count)
+        char_difference = calculate_difference(160, chars)
+        report = (f'Token count: {token_count}\n'
+                  f'ChatGPT Plus: {token_difference}\n'
+                  f'Character count: {chars}\n'
+                  f'Twitter post: {char_difference}\n'
+                  f'Word count: {words}')
+        window['-REPORT-'].update(report)
 
-model_select_menu = ttk.Combobox(root, textvariable=model, values=model_list)
-model_select_menu.pack(side='left')
-
-root.mainloop()
+window.close()
